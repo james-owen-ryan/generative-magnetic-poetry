@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Generative Magnetic Poetry</title>
+    <!-- Load jQuery -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+	<style>
+	</style>
+  </head>
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+  <center>
+      Click the button to generate a line.
+      <br><br>
+      <button type="button" onclick="generateContent()">Generate!</button>
+      <br><br>
+      <div id="generatedContent"></div>
+  </center>
+  <script>
+    function generateContent() {
+        // Form an example content request
+        function formContentRequest() {
+          var requestTags = [
+             {"name": "type:abstract", "status": "required"},
+             {"name": "type:nature", "desirability": 5, "status": "enabled"},
+             {"name": "type:love", "desirability": -5, "status": "enabled"},
+             {"name": "verb:passive", "status": "disabled"}
+          ]
+          return requestTags
+        }
+        // Send the content request to the backend and display the results in
+        // the generatedContent div
+        $.ajax({
+            url: '/contentRequest',
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                tags: formContentRequest()
+            }),
+            async: true,
+            cache: false,
+            success: function(data){
+                data = JSON.parse(data);
+                document.getElementById("generatedContent").innerHTML = data["text"] + " <br> " + data["tags"].toString();
+            },
+            error: function(err){
+                alert('This content request could not be satisfied. See the app console for more details.');
+            }
+        })
+      }
+  </script>
+</html>
